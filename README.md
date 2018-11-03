@@ -25,16 +25,27 @@ aws_access_key_id=AKIsome-secret-key-id
 aws_secret_access_key=and-its-secret-companion
 ```
 
-Target-profile in 'config':
+Setup profile in 'config' for every account you are using
 ```
-[profile example-role-on-target-account]
+[profile development]
 output=json
 region=eu-west-1
 role_arn=arn:aws:iam::210987654321:role/role-name-to-be-assumed
 source_profile=source-account
 mfa_serial=arn:aws:iam::123456789012:mfa/your-user-name
+
+[profile qa]
+region = eu-west-1
+role_arn = arn:aws:iam::1234567890:role/testing-role
+source_profile = source-account
+
+[profile prod]
+region = eu-west-1
+role_arn = arn:aws:iam::9012:role/readonly
+mfa_serial = arn:aws:iam::123456789012:mfa/your-user-name
+source_profile = source-account
 ```
 
-Once done like this you can call ```aws s3 ls --profile example-role-on-target-account ``` and AWS CLI will automatically do AssumeRole (and ask MFA if you have it enabledi, this example assumes you do as it is a best practice). 
+Once done like this you can call ```aws s3 ls --profile development ``` and AWS CLI will automatically do AssumeRole (and ask MFA if you have it enabledi, this example assumes you do as it is a best practice). 
 
 

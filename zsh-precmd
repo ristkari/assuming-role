@@ -1,0 +1,41 @@
+
+role_info() {
+  printf "$fg[blue]$ASSUMED_ROLE"
+}
+
+if (( ${+ASSUMED_ROLE} && ${+CREDENTIALS_EXPIRATION} )); then
+   printf "\n$fg[yellow] You have assumed $fg[blue] $ASSUMED_ROLE \n\n"
+fi
+
+precmd() {
+  local venv
+  if (( ${+VIRTUAL_ENV} )); then
+    venv="%{$fg[blue]%}$(basename $VIRTUAL_ENV) %{$fg[white]%}"
+  else
+    venv=""
+  fi
+  #PROMPT="$venv%(?.%F{magenta}.%F{red})❯%f "
+  RPROMPT="$venv"
+
+  if (( ${+ASSUMED_ROLE} && ${+CREDENTIALS_EXPIRATION} )); then
+    local role
+    local expire
+    secs=$(expr $CREDENTIALS_EXPIRATION - $(date +%s))
+    if (( $secs > 0 )); then
+      let "valh = $secs / 60 / 60"
+      let "valm = ($secs / 60) % 60"
+      let "vals = $secs % 60"
+      expire="%{$fg[yellow]%}${valh}h ${valm}m ${vals}s"
+    else
+      expire="%{$fg[red]%}Keys expired!"
+    fi
+    role="%{$fg[blue]%}$ASSUMED_ROLE"
+    if (( ${+VIRTUAL_ENV} )); then
+      venv="%{$fg[magenta]%}| %{$fg[blue]%}$(basename $VIRTUAL_ENV) "
+    else
+      venv=""
+    fi
+    #PROMPT="$expire $role $venv%(?.%F{magenta}.%F{red})❯%f "
+    RPROMPT="$expire $role $venv%{$fg[white]%}"
+  fi
+  }
